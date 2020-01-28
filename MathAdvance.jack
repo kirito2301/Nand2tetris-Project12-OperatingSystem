@@ -1,0 +1,37 @@
+/** Class MathAdvance */
+
+/*
+	int gcd(int,int) : find greatest common divisor
+*/
+
+class MathAdvance{
+
+	function int gcd(int a,int b){
+		var int r;
+		while(~(b = 0)){
+			let r = a - (b * (a / b));
+			let a = b;
+			let b = r;
+		}
+		return a;
+	}
+	
+	function int mod(int a, int b){
+		var int temp;
+		
+		if(~(b > 0)){
+			do Output.printString("error: MathAdvance.mod - mod number = 0");
+			do Output.println();
+			do Sys.error(220);
+		}
+		if(a = 0){
+			return 0;
+		}
+		if(a > 0){
+			return a - ( b * (a / b));
+		}else{ // a < 0
+			let temp = a + ( b * (Math.abs(a) / b));
+			return b - temp;
+		}
+	}
+}

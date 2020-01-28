@@ -1,0 +1,161 @@
+/** Class String */
+
+class String {
+	
+	//---------String Construct-------------------------------
+	
+	field int maxLeng, curLeng;
+	field Array str;
+	
+    constructor String new(int rqLeng){
+		if(rqLeng < 0){
+			do Output.printString("error: String.new - require string length less than 0");
+			do Output.println();
+			do Sys.error(120);
+		}
+		if(rqLeng = 0){
+			do Output.printString("warning: String.new - require string length is 0");
+			do Output.println();
+		}
+		if(rqLeng > 0){
+			let str = Array.new(rqLeng);
+		}
+		let maxLeng = rqLeng;
+		let curLeng = 0;
+		return this;
+    }
+
+	//---------String Dispose-------------------------------
+	
+    method void dispose(){
+		do Memory.deAlloc(this);
+		return;
+    }
+	
+	//---------String Property-------------------------------
+
+    method int length(){
+		return curLeng;
+    }
+
+    method char charAt(int idx) {
+		if((idx + 1) > maxLeng ){
+			do Output.printString("warning: String.charAt - request index exceed string max length");
+			do Output.println();
+			return 0;
+		}
+		return str[idx];
+    }
+
+	//---------String Modify-------------------------------
+
+    method void setCharAt(int idx, char c) {
+		if((idx + 1) > maxLeng){
+			do Output.printString("error: String.setCharAt - request index exceed string max length");
+			do Output.println();
+			do Sys.error(121);
+		}
+		let str[idx] = c;
+		return;
+	}
+
+    method String appendChar(char c) {
+		if(curLeng = maxLeng){
+			do Output.printString("warning: String.appendChar - string is already full");
+			do Output.println();
+			return this;
+		}
+		let str[curLeng] = c;
+		let curLeng = curLeng + 1;
+		return this;
+    }
+
+    method void eraseLastChar() {
+		if(curLeng = 0){
+			do Output.printString("warning: String.eraseLastChar - string is already empty");
+			do Output.println();
+			return;
+		}
+		let curLeng = curLeng - 1;
+		return;
+    }
+
+	//---------String Convert-------------------------------
+
+    method int intValue() {
+		var int result, idx, sign;
+		
+		let result = 0;
+		let idx = 0;
+		let sign = 1;
+		
+		while(idx < curLeng){
+			if(idx = 0){
+				if(str[idx] = 45){ // '-' = 45
+					let sign = -1;
+				}else{
+					if((str[idx] > 47) & (str[idx] < 58)){
+						let result = (10 * result) + charToInt(str[idx]);
+					}else{
+						return result * sign;		
+					}
+				}
+			}else{
+				if((str[idx] > 47) & (str[idx] < 58)){
+					let result = (10 * result) + charToInt(str[idx]);
+				}else{
+					return result * sign;		
+				}
+			}
+			let idx = idx + 1;
+		}
+		return result * sign;
+    }
+	
+	method void setInt(int value){
+		let curLeng = 0;
+		
+		if(value < 0){
+			do appendChar(45);
+			let value = -value;
+		}
+		
+		do setDigit(value);
+		
+		return;
+    }
+	
+	method void setDigit(int value){
+		if(value < 10){
+			do appendChar(value + 48);
+		}else{
+			do setDigit(value / 10);
+			do appendChar(MathAdvance.mod(value, 10) + 48);
+		}
+		return;
+	}
+
+	//---------Char Convert-------------------------------
+
+	method int charToInt(int x){
+		return x - 48;
+	}
+	
+	method int intToChar(int x){
+		return x + 48;
+	}
+
+	//---------String Special Char-------------------------------
+
+    function char newLine() {
+		return 128;
+    }
+
+    function char backSpace() {
+		return 129;
+    }
+
+    function char doubleQuote() {
+		return 34;
+    }
+}

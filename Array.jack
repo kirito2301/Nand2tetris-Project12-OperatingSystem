@@ -1,0 +1,25 @@
+/** Class Array */
+
+class Array {
+	
+	//---------Array New Dispose---------------------
+	
+    function Array new(int size) {
+		if(size < 0){
+			do Output.printString("error: Array.new - require array length less than 0.");
+			do Output.println();
+			do Sys.error(130);
+		}
+		if(size = 0){
+			do Output.printString("warning: Array.new - require array length is 0.");
+			do Output.println();
+			return null;
+		}
+		return Memory.alloc(size);
+	}
+
+    method void dispose() {
+		do Memory.deAlloc(this);
+		return;
+    }
+}

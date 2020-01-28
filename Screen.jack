@@ -1,0 +1,221 @@
+/** Class Screen */
+
+class Screen {
+
+	//---------Screen Initialize-------------------------------
+	
+	static int SCREEN; // 16384 ~ 24575
+	static bool COLOR; // W: false, B: true
+	
+    function void init() {
+		let SCREEN = 16384;
+		let COLOR = true;
+		return;
+    }
+	
+	//---------Screen Property-------------------------------
+
+	function void setColor(boolean b) {
+		let COLOR = b;
+		return;
+	}
+	
+	function int getAddress(int x, int y){
+		return SCREEN + (32 * y) + (x / 16);
+	}
+
+	//---------Screen Clear-------------------------------
+
+    function void clearScreen() {
+		var int memIdx;
+		let memIdx = SCREEN;
+		
+		while(memIdx < 24576){
+			do Memory.poke(memIdx, 0);
+			let memIdx = memIdx + 1;
+		}
+		
+		return;
+    }
+
+	//---------Screen Draw Dot or Line-------------------------------
+
+    function void drawPixel(int x, int y) {
+		var int address, setBit, originBit;
+		
+		if(x < 0 | y < 0 | x > 511 | y > 255){
+			do Output.printString("error: Screen.drawPixel - require coordinate out of range");
+			do Output.println();
+			do Sys.error(150);
+		}
+		
+		let address = Screen.getAddress(x, y);
+		let originBit = Memory.peek(address);
+		if(COLOR = true){
+			let setBit = 0;
+			let setBit = Math.bitAdd(setBit, MathAdvance.mod(x, 16));
+			let setBit = setBit | originBit;
+		}else{
+			let setBit = -1;
+			let setBit = Math.bitMinus(setBit, MathAdvance.mod(x, 16));
+			let setBit = setBit & originBit;
+		}
+		
+		do Memory.poke(address, setBit);
+		
+		return;
+    }
+
+    function void drawLine(int x1, int y1, int x2, int y2) {
+		var int dx, dy, diff, stepX, stepY;
+		
+		if(x1 < 0 | x1 < 0 | y1 < 0 | y2 < 0 | x1 > 511 | x2 > 511 | y1 > 255 | y2 > 255){
+			do Output.printString("error: Screen.drawLine - require coordinate out of range");
+			do Output.println();
+			do Sys.error(151);
+		}
+		
+		let dx = x2 - x1;
+		let dy = y2 - y1;
+		
+		// special case for dor, horizontal, vertical
+		if(dx = 0){
+			if(dy = 0){
+				do Screen.drawPixel(x1, y1);
+				return;
+			}else{
+				do Screen.drawVertiLine(y1, y2, x1);
+				return;
+			}
+		}
+		if(dy = 0){
+			do Screen.drawHoriLine(x1, x2, y1);
+			return;
+		}
+		
+		let diff = 0; // diff = db * dx - da * dy
+		if(dx > 0){
+			let stepX = 1;
+		}else{
+			let stepX = -1;
+		}
+		if(dy > 0){
+			let stepY = 1;
+		}else{
+			let stepY = -1;
+		}
+		
+		while(~(x1 = x2 & y1 = y2)){
+			do Screen.drawPixel(x1, y1);
+			if(diff < 0){
+				let x1 = x1 + stepX;
+				let diff = diff + Math.abs(dy);
+			}else{
+				let y1 = y1 + stepY;
+				let diff = diff - Math.abs(dx);
+			}
+		}
+		
+		return;
+    }
+
+	function void drawHoriLine(int x1, int x2, int y){
+		var int temp;
+		
+		if(x1 > x2){
+			let temp = x1;
+			let x1 = x2;
+			let x2 = temp;
+		}
+		
+		while(~(x1 > x2)){
+			do Screen.drawPixel(x1, y);
+			let x1 = x1 + 1;
+		}
+		return;
+	}
+
+	function void drawVertiLine(int y1, int y2, int x){
+		var int temp;
+		
+		if(y1 > y2){
+			let temp = y1;
+			let y1 = y2;
+			let y2 = temp;
+		}
+		
+		while(~(y1 > y2)){
+			do Screen.drawPixel(x, y1);
+			let y1 = y1 + 1;
+		}
+		return;
+	}
+
+	//---------Screen Draw Shape-------------------------------
+
+	// draw solid rectangle
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+		var int temp;
+	
+		// let always x1 <= x2 & y1 <= y2
+		if(x1 > x2){
+			let temp = x1;
+			let x1 = x2;
+			let x2 = temp;
+		}
+		if(y1 > y2){
+			let temp = y1;
+			let y1 = y2;
+			let y2 = temp;
+		}
+		
+		if(x1 < 0 | y1 < 0 | x2 > 511 | y2 > 255){
+			do Output.printString("error: Screen.drawRectangle - require coordinate out of range");
+			do Output.println();
+			do Sys.error(152);
+		}
+		
+		while(~(y1 > y2)){
+			do Screen.drawHoriLine(x1, x2, y1);
+			let y1 = y1 + 1;
+		}
+		
+		return;
+    }
+
+	function void drawHollowRectangle(int x1, int y1, int x2, int y2){
+		do Screen.drawVertiLine(y1, y2, x1);
+		do Screen.drawVertiLine(y1, y2, x2);
+		do Screen.drawHoriLine(x1, x2, y1);
+		do Screen.drawHoriLine(x1, x2, y2);
+		
+		return;
+	}
+
+    function void drawCircle(int x, int y, int r) {
+		var int dy, dl;
+	
+		if(x < 0 | y < 0 | x > 511 | y > 255){
+			do Output.printString("error: Screen.drawCircle - require center out of range");
+			do Output.println();
+			do Sys.error(153);
+		}
+		
+		if(r > 181){ // 181 to prevent square overflow
+			do Output.printString("error: Screen.drawCircle - require radius out of range");
+			do Output.println();
+			do Sys.error(154);
+		}
+		
+		do Screen.drawHoriLine(x - r, x + r, y);
+		let dy = 1;
+		while(~(dy > r)){
+			let dl = Math.sqrt((r * r) - (dy * dy));
+			do Screen.drawHoriLine(x - dl, x + dl, y + dy);
+			do Screen.drawHoriLine(x - dl, x + dl, y - dy);
+			let dy = dy + 1;
+		}
+		
+		return;
+    }
+}

@@ -1,0 +1,75 @@
+/** Class Keyboard */
+
+class Keyboard {
+
+	//---------Keyboard Initialize-------------------------------
+
+	static int KEYBOARD, MAXLENG;
+
+    function void init() {
+		let KEYBOARD = 24576;
+		let MAXLENG = 64;
+		return;
+    }	
+
+	//---------Keyboard Read Input-------------------------------
+	
+	function char keyPressed() {
+		return Memory.peek(KEYBOARD);
+    }
+
+    function char readChar() {
+		var char c;
+		while(c = 0){
+			let c = Keyboard.keyPressed();
+		}
+		if(~(c = 128) & ~(c = 129)){
+			do Output.printChar(c);
+		}
+		return c;
+    }
+
+    function String readLine(String message) {
+		var char c;
+		var String str;
+		
+		let str = String.new(MAXLENG);
+		do Output.printString(message);
+		
+		let c = Keyboard.readChar();
+		while(~(c = 128) & ~(str.length() > MAXLENG)){ // New Line = 128
+			if(c = 129){ // BackSpace = 129
+				do Output.backSpace();
+				do str.eraseLastChar();
+			}else{
+				do str.appendChar(c);
+			}
+			let c = Keyboard.readChar();
+		}
+		do Output.println();
+		
+		return str;
+    }   
+
+    function int readInt(String message) {
+		var char c;
+		var String str;
+		
+		let str = String.new(MAXLENG);
+   		do Output.printString(message);
+		
+		let c = Keyboard.readChar();
+		while(~(c = 128) & ~(str.length() > MAXLENG)){
+			if(c = 129){ // BackSpace = 129
+				do Output.backSpace();
+				do str.eraseLastChar();
+			}else{
+				do str.appendChar(c);
+			}
+			let c = Keyboard.readChar();
+		}
+		do Output.println();
+		
+		return str.intValue();
+	}
+}

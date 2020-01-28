@@ -1,0 +1,144 @@
+/** Class Fraction */
+
+// sign of Fraction store in numerator
+
+class Fraction {
+	
+	//---------Fraction Construct-------------------------------
+	
+	field int numerator, denominator;
+	
+	constructor Fraction new(int a,int b){
+		if(b = 0){ // b != 0
+			do Output.printString("error: Fraction.new - denominator = 0");
+			do Output.println();
+			do Sys.error(210);
+		}	
+		if((a > 0) & (b < 0)){
+			let a = -a;
+			let b = -b;
+		}
+		if((a < 0) & (b < 0)){
+			let a = -a;
+			let b = -b;
+		}
+		let numerator = a;
+		let denominator = b;
+		do reduce();
+		return this;
+	}
+	
+	method void reduce(){
+		var int g;
+		
+		if(numerator = 0){
+			let denominator = 1;
+			return;
+		}
+		if(numerator < 0){
+			let g = MathAdvance.gcd(-numerator, denominator);
+		}else{
+			let g = MathAdvance.gcd(numerator, denominator);
+		}
+		if(g > 1){
+			let numerator = numerator / g;
+			let denominator = denominator / g;
+		}
+		return;
+	}
+	
+	//---------Fraction Value------------------------------------
+	
+	method int getNumerator(){
+		return numerator;
+	}
+	
+	method int getDenominator(){
+		return denominator;
+	}
+	
+	//---------Fraction Arithmetic-------------------------------
+	
+	function Fraction plus(Fraction a, Fraction b){
+		var int sum;
+		let sum = (a.getDenominator() * b.getNumerator()) + (a.getNumerator() * b.getDenominator());
+		return Fraction.new(sum, a.getDenominator() * b.getDenominator());
+	}
+	
+	function Fraction minus(Fraction a, Fraction b){
+		var int sum;
+	
+		if(a.getNumerator() = 0){
+			return Fraction.new(-b.getNumerator(), b.getDenominator());
+		}
+		if(b.getNumerator() = 0){
+			return	a;
+		}else{
+			let sum = (a.getNumerator() * b.getDenominator()) - (a.getDenominator() * b.getNumerator());
+			return Fraction.new(sum, a.getDenominator() * b.getDenominator());
+		}
+	}
+	
+	function Fraction product(Fraction a,Fraction b){
+		if(a.getNumerator() = 0 | b.getNumerator() = 0){
+			return Fraction.new(0, 1);
+		}else{
+			return Fraction.new(a.getNumerator() * b.getNumerator(), a.getDenominator() * b.getDenominator());
+		}
+	}
+	
+	function Fraction divide(Fraction a, Fraction b){
+		if(b.getNumerator() = 0){
+			do Output.printString("error: Fraction.divide - b's numerator = 0");
+			do Output.println();
+			do Sys.error(211);
+		}
+		return Fraction.new(a.getNumerator() * b.getDenominator(), a.getDenominator() * b.getNumerator());
+	}
+	
+	//---------Fraction Print-------------------------------------
+	
+	method void printImproper(){
+		if(numerator = 0){
+			do Output.printInt(0);
+			do Output.println();
+			return;
+		}
+		do Output.printInt(numerator);
+		do Output.printString("/");
+		do Output.printInt(denominator);
+		do Output.println();
+		return;
+	}
+	
+	method void printMixed(){
+		if(numerator = 0){
+			do Output.printInt(0);
+			do Output.println();
+			return;
+		}
+		if(Math.abs(numerator) < denominator){ // eg: -2/3, 4/7
+			do printImproper();
+			return;
+		}
+		do Output.printInt(numerator / denominator);
+		do Output.printString("&");
+		if(numerator < 0){
+			do Output.printInt(MathAdvance.mod(Math.abs(numerator), denominator));
+		}else{
+			do Output.printInt(MathAdvance.mod(numerator, denominator));
+		}
+		do Output.printString("/");
+		do Output.printInt(denominator);
+		do Output.println();
+		return;
+	}
+	
+	//---------Fraction dispose-------------------------------------
+	
+	method void dispose(){
+		do Memory.deAlloc(this);
+		return;
+	}
+	
+}

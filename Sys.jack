@@ -1,0 +1,41 @@
+/** Class Sys */
+
+class Sys {
+
+	static int CYCLEPERMS;
+	
+    function void init() {
+		let CYCLEPERMS = 20000;
+		do Memory.init();
+		do Math.init();
+		do Keyboard.init();
+		do Output.init();
+		do Screen.init();
+		do Main.main();
+		do Sys.halt();
+		return;
+    }
+
+    function void halt() {
+		do Output.printString("System: Program Halt.");
+		while(true){
+		}
+		return;
+    }
+
+    function void wait(int duration) {
+		var int count;
+		while(count < (CYCLEPERMS * duration)){
+			let count = count + 1;
+		}
+		return;
+    }
+
+    function void error(int errorCode) {
+		do Output.printString("System: ERR");
+		do Output.printInt(errorCode);
+		do Output.println();
+		do Sys.halt();
+		return;
+    }
+}

@@ -1,0 +1,169 @@
+//** Class Math */
+
+class Math{
+
+	//---------Math Initialize-------------------------------
+	
+	static Array twoPower;
+	
+    function void init() {
+		var int n;
+		let n = 1;
+        let twoPower = Array.new(16);
+        let twoPower[0] = 1;
+		while(n < 16){
+			let	twoPower[n] = twoPower[n-1] + twoPower[n-1]; //can't use * since not init yet
+			let n = n + 1 ;
+		}
+		return;
+    }
+	
+	//---------Math Bit Operation-------------------------------
+	
+	function bool bitAnd(int x,int idx){
+		if(x & twoPower[idx] = 0){
+			return false;
+		}else{
+			return true;
+		}
+	}
+	
+	function bool bitAdd(int x, int idx){ 
+		return x | twoPower[idx];
+	}
+	
+	function bool bitMinus(int x, int idx){
+		var int temp;
+		let temp = -twoPower[idx] - 1;
+		return x & temp;
+	}
+	
+	//---------Math Arithmetic-------------------------------
+	
+	// add & minus use hardware implemetion
+
+    function int multiply(int x, int y) {
+		var int n, result;
+		var bool ifNegative;
+		let ifNegative = false;
+		
+		if(x = 0 | y = 0){
+			return 0;
+		}
+		
+		let n = 0;
+		let result = 0;
+		
+		if((x < 0 & y > 0) | (x > 0 & y < 0)){
+			let ifNegative = true;
+		}
+		
+		if(x < 0){
+			let x = -x;
+		}
+		if(y < 0){
+			let y = -y;
+		}
+		
+		while(n < 16){
+			if(Math.bitAnd(y, n) = true){
+				let result = result + x;
+			}
+			let x = x + x;
+			let n = n + 1;
+		}
+		
+		if(ifNegative){
+			let result = -result;
+		}
+		return result;
+	}
+
+    function int divide(int x, int y) {
+		var int q;
+		
+		if(y = 0){
+			do Output.printString("error: Math.divide - divisor is zero");
+			do Output.println();
+			do Sys.error(110);
+		}
+		
+		if(x < 0){
+			if(y < 0){
+				return Math.divide(-x, -y);
+			}else{ // y > 0
+				return -Math.divide(-x, y);
+			}
+		}else{ // x > 0
+			if(y < 0){
+				return -Math.divide(x, -y);
+			}
+		}
+		
+		if(y > x){
+			return 0;
+		}
+				
+		let q = Math.divide(x, 2 * y);
+		if(x - ((2 * q) * y) < y ){
+			return 2 * q;
+		}
+		else{
+			return (2 * q) + 1;
+		}
+	}
+
+	//---------Math Other-------------------------------
+	
+    function int abs(int x) {
+		if(x < 0){
+			return -x;
+		}else{
+			return x;
+		}
+    }
+	
+	function int max(int a, int b) {
+		if(a > b){
+			return a; 
+		}else{
+			return b;
+		}
+	}
+
+
+    function int min(int a, int b) {
+		if(a < b){
+			return a; 
+		}else{
+			return b;
+		}
+	}
+
+    function int sqrt(int x){
+		var int y, idx;
+		let y = 0;
+		let idx = 7;
+		
+		if(x < 0){
+			do Output.printString("error: Math.sqrt - x is negative");
+			do Output.println();
+			do Sys.error(111);
+		}
+		
+		if(x = 0){
+			return 0;
+		}
+		
+		while((idx + 1) > 0){  // max 32767 = 181..^2 , set 182 to avoid overflowed
+			if(((y + twoPower[idx]) < 182) & (((y + twoPower[idx]) * (y + twoPower[idx])) - 1 < x)){
+				let y = y + twoPower[idx];
+			}
+			let idx = idx - 1;
+		}
+		
+		return y;
+    }
+
+
+}

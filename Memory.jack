@@ -1,0 +1,84 @@
+/** Class Memory */
+
+// Memory segment: ptr | length | ...
+// Heap : 2048 - 16383
+
+class Memory {
+
+	//---------Memory Initialize-------------------------------
+	
+	static int MEMORY, HEAP;
+	
+    function void init() {
+		let MEMORY = 0;
+		let HEAP = 2048;
+		let HEAP[0] = -1;
+		let HEAP[1] = 16384 - 2048 - 2;
+		return;
+    }
+
+	//---------Memory Direct-------------------------------
+
+    function int peek(int address) {
+		return MEMORY[address];
+    }
+
+    function void poke(int address, int value) {
+		let MEMORY[address] = value;
+		return;
+    }
+
+	//---------Memory Locate-------------------------------
+	
+    function int alloc(int size) {
+		var int currentAdd, selectAdd, block;
+		var int currentSize, selectSize;
+		
+		if(~(size > 0)){
+			do Output.printString("error: Memory.alloc - require size less than 1.");
+			do Output.println();
+			do Sys.error(170);
+		}
+
+		let currentAdd = HEAP;
+		let currentSize = currentAdd[1];
+		let selectAdd = -1;
+		let selectSize = currentAdd[1] + 1;
+		
+		while(~(currentAdd = -1)){
+			if(~(currentSize < (size + 2))){
+				if(currentSize < selectSize){
+					let selectAdd = currentAdd;
+					let selectSize = currentSize;
+				}
+			}
+			let currentAdd = currentAdd[0];
+			if(~(currentAdd = -1)){
+				let currentSize = currentAdd[1];
+			}
+		}
+		
+		if(selectAdd = -1){
+			do Output.printString("error: Memory.alloc - unable to locate new segment.");
+			do Output.println();
+			do Sys.error(171);
+		}
+		
+		let selectAdd[1] = selectAdd[1] - size - 2;
+		let block = selectAdd + selectAdd[1] + 2;
+		let block[-2] = -1;
+		let block[-1] = size;
+		return block;
+	}
+
+	function void deAlloc(Array array) { // append to last
+		var int currentAdd, block;
+		let block = array - 2;
+		let currentAdd = HEAP;
+		while(~(currentAdd[0] = -1)){
+			let currentAdd = currentAdd[0];
+		}
+		let currentAdd[0] = block;
+		return;
+	}
+}
